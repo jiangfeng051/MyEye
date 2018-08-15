@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+{% block style %}
+    <style>
+
+        .content-left{
+            width: 200px;
+            float: left;
+        }
+        .content-right{
+            width: 500px;
+            height: 500px;
+            float: left;
+        }
+        .content-host{
+            width: 200px;
+            height: 800px;
+            overflow: auto;
+        }
+        .cmd-message{
+            {#display: none;#}
+            width: 1000px;
+            height: 900px;
+            {#background-color: red;#}
+            overflow: auto;
+        }
+        .delete_model {
+            /*display: none;*/
+            position: fixed;
+            height: 100px;
+            width: 300px;
+            background-color: red;
+            top: 50%;
+            left: 50%;
+            z-index: 1002;
+            margin-left: -100px;
+            margin-top: -100px;
+
+        }
+        .delete_shade{
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: gray;
+            opacity: 0.5;
+            z-index: 99;
+        }
+        .hide{
+            display: none;
+        }
+    </style>
+{% endblock %}
+{% block body %}
+  <body>
+
+    <nav class="navbar navbar-inverse navbar-fixed-top">
+      <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+            <span class="sr-only">Toggle navigation</span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="https://v3.bootcss.com/examples/dashboard/#">Project name</a>
+        </div>
+        <div id="navbar" class="navbar-collapse collapse">
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">{{request.session.username}}</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-sm-3 col-md-2 sidebar">
+          <ul class="nav nav-sidebar">
+            <li><a href="#">账户信息<span class="sr-only">(current)</span></a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">账信息</a></li>
+            <li><a href="https://v3.bootcss.com/examples/dashboard/#">Analytics</a></li>
+            <li class="active"><a href="/rule?page=1">日志监控</a></li>
+            <li><a href="/multi_cmd.html">批量执行</a></li>
+            <li><a href="/multi_file.html">批量上传</a></li>
+          </ul>
+        </div>
+        <div class="col-sm-9 col-sm-offset-3 col-md-10 col-md-offset-2 main">
+            {% block content %}
+            <!-- Large modal -->
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target=".bs-example-modal-lg">添加</button>
+
+            <div class="modal fade bs-example-modal-lg" tabindex="-1" role="dialog" aria-labelledby="myLargeModalLabel">
+              <div class="modal-dialog modal-lg" role="document">
+                <div class="modal-content">
+                    <div style="height: 250px;width: 1000px">
+                             <form class="form-inline" style="margin: 10px" id="rlue_add">
+                               <div class="form-group" >
+                                <label for="exampleInputEmail2">规则名称</label>
+                                <input type="text" class="form-control" id="exampleInputEmail2" name="rule_name">
+                              </div>
+                             <div style="margin-top: 10px">
+                                   <div class="form-group">
+                                    <label for="exampleInputName2">规则描述</label>
+                                    <select style="height: 30px" name="rule_time">
+                                        <option value="5">5分钟</option>
+                                        <option value="10">10分钟</option>
+                                    </select>
+                                  </div>
+                                  <div class="form-group">
+                                    <label for="exampleInputEmail2">内</label>
+                                    <input type="text" class="form-control" id="exampleInputEmail2" placeholder="规则描述,多字段用','分开" name="rule_content">
+                                  </div>
+                                     <select style="height: 30px" name="rule_condtion">
+                                        <option value="lt"><</option>
+                                        <option value="gt">> </option>
+                                    </select>
+                                  <div class="form-group">
+                                    <input type="text" class="form-control" id="exampleInputEmail2" placeholder="阈值,请输入数字" name="rule_price" onkeyup="value=value.replace(/[^\d]/g,'')">
+                                  </div>
+
+                             </div>
+                                 <div style="margin-top: 100px">
+                                       <button type="button" class="btn btn-primary" id="btn_submit">提交</button>
+                                 </div>
+                            </form>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <table class="table">
+                <thead>
+                    <th>规则名称</th>
+                    <th>筛选规则</th>
+                    <th>规则条件</th>
+                    <th>规则临界值</th>
+                    <th>统计时间</th>
+                    <th>操作</th>
+                </thead>
+                <tbody>
+                    {% for dic in rule_dict %}
+                        <tr>
+                            <td>{{ dic.rule_name }}</td>
+                            <td>{{ dic.rule_content }}</td>
+                            <td>{{ dic.rule_condtion }}</td>
+                            <td>{{ dic.rule_price }}</td>
+                            <td>{{ dic.rule_time }}</td>
+                            <td><a href="rule/ID?rule_id={{ dic.rule_id }}">编辑</a>|<span class="rule-delete" rule_name="{{ dic.rule_name }}" rule_id="{{ dic.rule_id }}">删除</span></td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            <nav aria-label="Page navigation">
+              <ul class="pagination">
+                    {% for key,value in page_dict.items %}
+                        <li><a href={{ value }}>{{ key }}</a></li>
+                    {% endfor %}
+              </ul>
+            </nav>
+                {% endblock %}
+        </div>
+      </div>
+    </div>
+    <form>
+          <div  class="delete_model hide">
+          <div id="del_rule_id" style="display: none"></div>
+          <div>确定删除规则：</div>
+          <div id="del_rule_name"></div>
+        <div style="margin-top: 10px">
+            <button type="button" class="btn btn-danger" style="margin-right: 10px;margin-left: 80px" id="btn_delsubmit">确定</button>
+            <button type="button" class="btn btn-primary" id="btn_delcancel">取消</button>
+        </div>
+      </div>
+        <div class="delete_shade hide" >
+        </div>
+    </form>
+
+  </body>
+{% endblock %}
+{% block script %}
+    <script src="/static/dist/js/bootstrap.min.js"></script>
+    <script src="/static/dist/js/bootstrap-select.min.js"></script>
+    <script>
+        $(function () {
+            bindsubmitevent();
+            binddeleteevent();
+            binddelcancel();
+            binddelsubmit();
+        });
+        function bindsubmitevent() {
+            $('#btn_submit').click(function () {
+                var data = $('#rlue_add').serialize();
+                console.log(data);
+                $.ajax({
+                    url:'/rule',
+                    method:'POST',
+                    data:data,
+                    dataType:'JSON',
+                    success:function (req) {
+                        if (req.status){
+                            window.location.href = '/rule?page=1';
+                        }
+                    }
+                })
+            })
+        }
+        function binddeleteevent() {
+            $('.rule-delete').click(function () {
+                $('.delete_model').removeClass('hide');
+                $('.delete_shade').removeClass('hide');
+                var rule_name = $(this).attr('rule_name');
+                var rule_id = $(this).attr('rule_id');
+                $('#del_rule_id').text(rule_id);
+                $('#del_rule_name').text(rule_name);
+            })
+        }
+        function binddelcancel() {
+            $('#btn_delcancel').click(function () {
+                $('.delete_model').addClass('hide');
+                $('.delete_shade').addClass('hide');
+                 $('#del_rule_id').text('');
+                $('#del_rule_name').text('');
+            })
+        }
+
+        function binddelsubmit() {
+            $('#btn_delsubmit').click(function () {
+                var rule_id = $('#del_rule_id').text();
+                $.ajax({
+                    url:'/rule/del/ID',
+                    method:'POST',
+                    data:{rule_id:rule_id},
+                    dataType:'JSON',
+                    success:function (req) {
+                        if (req.status){
+                            window.location.href='/rule?page=1'
+                        }
+                    }
+                })
+            })
+        }
+    </script>
+{% endblock %}
