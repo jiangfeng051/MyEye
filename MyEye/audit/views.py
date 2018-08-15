@@ -325,7 +325,7 @@ def rule_operation(request):
 
 @auth
 def rule_del(request):
-    #删除rule
+    #删除rule规则
     if request.method == 'POST':
         data = {'status': True, 'error': "", 'message': ''}
         rule_id = request.POST.get('rule_id')
